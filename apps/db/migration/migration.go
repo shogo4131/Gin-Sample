@@ -11,7 +11,7 @@ func main() {
 
 	db := db.SetupDB()
 
-	if err := db.AutoMigrate(&model.Item{}); err != nil {
+	if err := db.AutoMigrate(&model.Item{}, &model.User{}); err != nil {
 		panic("failed to migrate")
 	}
 }
