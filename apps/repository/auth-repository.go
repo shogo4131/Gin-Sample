@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"go-gin-sample/apps/model"
 
 	"gorm.io/gorm"
@@ -8,6 +9,7 @@ import (
 
 type IAuthRepository interface {
 	CreateUser(user model.User) error
+	FindUser(email string) (*model.User, error)
 }
 
 type AuthRepository struct {
@@ -26,4 +28,19 @@ func (r *AuthRepository) CreateUser(user model.User) error {
 	}
 
 	return nil
+}
+
+func (r *AuthRepository) FindUser(email string) (*model.User, error) {
+	var user model.User
+
+	result := r.db.First(&user, "email = ?", email)
+
+	if result.Error != nil {
+		if result.Error.Error() == "record not found" {
+			return nil, errors.New("user not found")
+		}
+		return nil, result.Error
+	}
+
+	return &user, nil
 }
