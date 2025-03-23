@@ -3,7 +3,7 @@ package main
 import (
 	"go-gin-sample/apps/config"
 	"go-gin-sample/apps/controllers"
-	"go-gin-sample/apps/model"
+	"go-gin-sample/apps/db"
 	"go-gin-sample/apps/repository"
 	"go-gin-sample/apps/services"
 
@@ -13,13 +13,9 @@ import (
 func main() {
 	config.InitConfig()
 
-	items := []model.Item{
-		{Name: "テスト商品", Price: 1000, Description: "テスト商品の説明", SoldOut: false},
-		{Name: "テスト商品2", Price: 2000, Description: "テスト商品2の説明", SoldOut: true},
-		{Name: "テスト商品3", Price: 3000, Description: "テスト商品3の説明", SoldOut: false},
-	}
+	db := db.SetupDB()
 
-	itemRepository := repository.NewItemMemoryRepository(items)
+	itemRepository := repository.NewItemRepository(db)
 	itemService := services.NewItemService(itemRepository)
 	itemController := controllers.NewItemController(itemService)
 
