@@ -9,10 +9,10 @@ import (
 
 type IItemRepository interface {
 	FindAll() (*[]model.Item, error)
-	FindById(itemId uint) (*model.Item, error)
+	FindById(itemId uint, userId uint) (*model.Item, error)
 	Create(newItem model.Item) (*model.Item, error)
 	Update(updateItem model.Item) (*model.Item, error)
-	Delete(itemId uint) error
+	Delete(itemId uint, userId uint) error
 }
 
 type ItemRepository struct {
@@ -45,10 +45,10 @@ func (r *ItemRepository) FindAll() (*[]model.Item, error) {
 	return &items, nil
 }
 
-func (r *ItemRepository) FindById(itemId uint) (*model.Item, error) {
+func (r *ItemRepository) FindById(itemId uint, userId uint) (*model.Item, error) {
 	var item model.Item
 
-	result := r.db.First(&item, itemId)
+	result := r.db.First(&item, "id = ? AND user_id", itemId, userId)
 
 	if result.Error != nil {
 		if result.Error.Error() == "record not found" {
@@ -70,8 +70,8 @@ func (r *ItemRepository) Update(updateItem model.Item) (*model.Item, error) {
 	return &updateItem, nil
 }
 
-func (r *ItemRepository) Delete(itemId uint) error {
-	deleteItem, err := r.FindById(itemId)
+func (r *ItemRepository) Delete(itemId uint, userId uint) error {
+	deleteItem, err := r.FindById(itemId, userId)
 
 	if err != nil {
 		return err
